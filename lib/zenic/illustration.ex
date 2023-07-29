@@ -17,15 +17,13 @@ defmodule Zenic.Illustration do
   def init(scene, {renderables, camera}, _) do
     specs =
       renderables
-      |> Enum.reduce([], fn renderable, specs ->
-        Enum.reduce(Renderable.to_specs(renderable, camera), specs, fn {{_, _, z}, module, data,
-                                                                        opts},
-                                                                       specs ->
-          [{z, renderable_spec(module, data, opts)} | specs]
-        end)
+      |> Enum.flat_map(&Renderable.to_specs(&1, camera))
+      |> Enum.sort(fn {_, _, opts1}, {_, _, opts2} ->
+        Keyword.fetch!(opts1, :z) < Keyword.fetch!(opts2, :z)
       end)
-      |> Enum.sort(fn {z1, _}, {z2, _} -> z1 > z2 end)
-      |> Enum.reduce([], fn {_, spec}, specs -> [spec | specs] end)
+      |> Enum.reduce([], fn {module, data, opts}, specs ->
+        [renderable_spec(module, data, opts) | specs]
+      end)
 
     graph =
       Graph.build()

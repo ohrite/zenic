@@ -15,7 +15,7 @@ defmodule Zenic.Rect do
   def new(width, height, options \\ [])
 
   def new(width, height, options) do
-    {transform, options} = Keyword.pop(options, :transform, Transform.new())
+    {transform, options} = Transform.pop(options)
 
     with x = width / 2,
          y = height / 2,
@@ -31,26 +31,26 @@ defmodule Zenic.Rect do
         |> Vector3.cross(Vector3.sub(point1, point3))
         |> Vector3.normalize()
 
-      Vector3.dot(normal, Vector3.sub(point1, position)) >= 0
+      Vector3.dot(normal, Vector3.sub(point1, position)) < 0
     end
 
-    defp to_opts([p1, p2, p3, _], {_, _, z}, camera, options) do
+    defp get_z([{_, _, z0}, {_, _, z1}, {_, _, z2}, {_, _, z3}]),
+      do: (z0 + z1 + z2 + z3) / 4
+
+    defp to_opts([p1, p2, p3, _] = points, camera, options) do
       {backface, options} = Keyword.pop(options, :backface, false)
-      Keyword.merge([hidden: z < 0 || !(backface || hidden?(p1, p2, p3, camera))], options)
+      Keyword.merge([z: get_z(points), hidden: !backface && hidden?(p1, p2, p3, camera)], options)
     end
 
     def to_specs(%{points: points, options: options, transform: transform}, camera, transforms) do
-      [center | transformed] =
-        [{0, 0, 0} | Tuple.to_list(points)]
-        |> Transform.project([transform | transforms])
+      transformed = Transform.project(Tuple.to_list(points), [transform | transforms])
 
-      points =
+      projected =
         transformed
         |> Camera.project(camera)
         |> Enum.map(fn {x, y, _} -> {x, y} end)
-        |> List.to_tuple()
 
-      [{center, Scenic.Primitive.Quad, points, to_opts(transformed, center, camera, options)}]
+      [{Scenic.Primitive.Quad, List.to_tuple(projected), to_opts(transformed, camera, options)}]
     end
   end
 end

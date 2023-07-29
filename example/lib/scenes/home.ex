@@ -8,7 +8,7 @@ defmodule Example.Scene.Home do
   import Scenic.Primitives
   import Zenic.Scenic
 
-  @camera Camera.perspective(150, 150, 0.1, 1000.0, 10.0)
+  @camera Camera.perspective()
   @rect Rect.new(20, 20, backface: true, fill: :salmon, stroke: {20, :salmon}, join: :round, transform: Transform.new(translate: {0, 0, -5}))
   @ellipse Ellipse.new(20, 20, backface: true, stroke: {20, :purple}, join: :round, transform: Transform.new(translate: {0, 0, 5}))
   @root Group.new([@ellipse, @rect], transform: Transform.new(scale: {100, 100, 1.0}, translate: {20, 20, 300}))
@@ -26,7 +26,7 @@ defmodule Example.Scene.Home do
 
   @impl true
   def handle_info({{PubSub, :data}, {:frame, frame, _}}, %{assigns: %{graph: graph}} = scene) do
-    root = %{@root | transform: %{@root.transform | rotate: {{0, frame / 15, 0}, :xyz}}}
+    root = %{@root | transform: %{@root.transform | rotate: Quaternion.new(0, frame / 15, 0)}}
     graph = Graph.modify(graph, :illustration, &illustration(&1, {[root], @camera}))
     {:noreply, assign(push_graph(scene, graph), graph: graph)}
   end

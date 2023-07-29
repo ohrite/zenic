@@ -32,6 +32,10 @@ defmodule Zenic.Math.Vector3Test do
     test "multiplies a vector by a scalar value" do
       assert Vector3.mul({1, 2, 3}, 3) == {3, 6, 9}
     end
+
+    test "multiplies a vector by another vector" do
+      assert Vector3.mul({1, 2, 3}, {1, 2, 3}) == {1, 4, 9}
+    end
   end
 
   describe "div/2" do

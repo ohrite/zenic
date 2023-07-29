@@ -110,7 +110,7 @@ defmodule Zenic.Math.Vector3 do
   end
 
   @spec lerp(vector_a :: t(), vector_b :: t(), t :: number) :: t()
-  def lerp(vector_a, vector_a, t)
+  def lerp(a, b, t)
 
   def lerp(a, b, t) when is_float(t) and t >= 0.0 and t <= 1.0 do
     b

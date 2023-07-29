@@ -8,7 +8,9 @@ defmodule Example.MixProject do
       elixir: "~> 1.9",
       build_embedded: true,
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+      deps_path: "deps.nosync",
+      build_path: "_build.nosync"
     ]
   end
 

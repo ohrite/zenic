@@ -13,8 +13,8 @@ defmodule Zenic.MixProject do
       package: package(),
       deps: deps(),
       elixirc_paths: elixirc_paths(Mix.env()),
-      deps_path: "../deps.nosync",
-      build_path: "../_build.nosync"
+      deps_path: "deps.nosync",
+      build_path: "_build.nosync"
     ]
   end
 
@@ -29,15 +29,14 @@ defmodule Zenic.MixProject do
   defp deps do
     [
       {:scenic, "~> 0.11.0"},
-      {:scenic_driver_local, "~> 0.11.0"},
-      {:dialyxir, "~> 1.3", only: [:dev], runtime: false}
+      {:dialyxir, "~> 1.3", only: :dev, runtime: false},
+      {:ex_doc, ">= 0.0.0", only: :dev, runtime: false}
     ]
   end
 
   # Specifies which paths to compile per environment.
   defp elixirc_paths(:test), do: ["lib", "test/support"]
   defp elixirc_paths(_), do: ["lib"]
-
 
   defp package() do
     [

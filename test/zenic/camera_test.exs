@@ -3,30 +3,30 @@ defmodule Zenic.CameraTest do
 
   alias Zenic.Camera
 
-  describe "perspective/5" do
+  describe "perspective/4" do
     setup do
-      [camera: Camera.perspective(10, 10, 0.1, 100.0, 90.0)]
+      [camera: Camera.perspective(1, 90.0, 0.1, 100.0)]
     end
 
     test "renders a point directly in front of the camera", %{camera: camera} do
       point = {0, 0, 0}
-      assert Camera.project(point, camera) == {0, 0, 0}
+      assert Camera.project([point], camera) == [{0, 0, 0}]
     end
 
     test "renders a point inside of the frustrum", %{camera: camera} do
       point = {1, 0, 10}
-      {x, y, z} = Camera.project(point, camera)
-      assert x == 0.1
+      [{x, y, z}] = Camera.project([point], camera)
+      assert x == 1
       assert y == 0
-      assert_in_delta z, 1, 0.01
+      assert_in_delta z, 0, 0.01
     end
 
-    test "does not render a point outside of the frustrum", %{camera: camera} do
-      point = {100, 0, 10}
-      {x, y, z} = Camera.project(point, camera)
-      assert x == 10
+    test "keeps a point outside of the frustrum", %{camera: camera} do
+      point = {100, 0, -10}
+      [{x, y, z}] = Camera.project([point], camera)
+      assert x == -100
       assert y == 0
-      assert_in_delta z, 1, 0.01
+      assert_in_delta z, 0, 0.01
     end
   end
 
@@ -37,12 +37,12 @@ defmodule Zenic.CameraTest do
 
     test "renders a point directly in front of the camera", %{camera: camera} do
       point = {0, 0, 0}
-      assert Camera.project(point, camera) == {0, 0, 0}
+      assert Camera.project([point], camera) == [{0, 0, 0}]
     end
 
     test "renders a point inside of the frustrum", %{camera: camera} do
       point = {1, 0, 10}
-      {x, y, z} = Camera.project(point, camera)
+      [{x, y, z}] = Camera.project([point], camera)
       assert_in_delta x, 0.01, 0.01
       assert y == 0
       assert_in_delta z, -0.02, 0.001
@@ -50,7 +50,7 @@ defmodule Zenic.CameraTest do
 
     test "does not render a point outside of the frustrum", %{camera: camera} do
       point = {100, 0, 10}
-      {x, y, z} = Camera.project(point, camera)
+      [{x, y, z}] = Camera.project([point], camera)
       assert x == 2
       assert y == 0
       assert_in_delta z, -0.02, 0.001

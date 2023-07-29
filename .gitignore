@@ -1,13 +1,13 @@
 # The directory Mix will write compiled artifacts to.
-/_build/
-/example/_build/
+/_build.nosync/
+/example/_build.nosync/
 
 # If you run "mix test --cover", coverage assets end up here.
 /cover/
 
 # The directory Mix downloads your dependencies sources to.
-/deps/
-/example/deps/
+/deps.nosync/
+/example/deps.nosync/
 
 # Where third-party dependencies like ExDoc output generated docs.
 /doc/
