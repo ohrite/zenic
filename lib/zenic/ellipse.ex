@@ -22,6 +22,9 @@ defmodule Zenic.Ellipse do
   defimpl Zenic.Renderable, for: __MODULE__ do
     alias Zenic.Renderable
 
+    def apply(%{path: path}, keyframe),
+      do: Renderable.apply(path, keyframe)
+
     def to_specs(%{path: path}, camera, transforms),
       do: Renderable.to_specs(path, camera, transforms)
   end

@@ -21,6 +21,17 @@ defmodule Zenic.Path do
     @right {1, 0, 0}
     @up {0, 1, 0}
 
+    def apply(%{transform: from, options: options} = path, %{transforms: transforms}) do
+      transform =
+        with {:ok, id} <- Keyword.fetch(options, :id),
+             {:ok, to} <- Keyword.fetch(transforms, id) do
+            Transform.lerp(from, to, 1)
+        else
+          _ -> from
+        end
+      %{path | transform: transform}
+    end
+
     defp hidden?(origin, normal, %{position: position}),
       do: Vector3.dot(normal, Vector3.sub(origin, position)) < 0
 

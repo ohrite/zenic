@@ -14,9 +14,20 @@ defmodule Zenic.Dot do
   end
 
   defimpl Zenic.Renderable, for: __MODULE__ do
-    alias Zenic.Camera
+    alias Zenic.{Camera, Transform}
 
     @origin {0, 0, 0}
+
+    def apply(%{transform: from, options: options} = dot, %{transforms: transforms}) do
+      transform =
+        with {:ok, id} <- Keyword.fetch(options, :id),
+             {:ok, to} <- Keyword.fetch(transforms, id) do
+          Transform.lerp(from, to, 1)
+        else
+          _ -> from
+        end
+      %{dot | transform: transform}
+    end
 
     def to_specs(%{radius: radius, options: options, transform: transform}, camera, transforms) do
       [{_, _, z}] = transformed = Transform.project([@origin], [transform | transforms])

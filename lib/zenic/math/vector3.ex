@@ -112,7 +112,10 @@ defmodule Zenic.Math.Vector3 do
   @spec lerp(vector_a :: t(), vector_b :: t(), t :: number) :: t()
   def lerp(a, b, t)
 
-  def lerp(a, b, t) when is_float(t) and t >= 0.0 and t <= 1.0 do
+  def lerp(a, b, t) when is_number(t) and a == b, do: a
+  def lerp(a, _, t) when is_number(t) and t == 0, do: a
+  def lerp(_, b, t) when is_number(t) and t == 1, do: b
+  def lerp(a, b, t) when is_number(t) and t > 0 and t < 1 do
     b
     |> sub(a)
     |> mul(t)

@@ -9,8 +9,8 @@ defmodule Example.MixProject do
       build_embedded: true,
       start_permanent: Mix.env() == :prod,
       deps: deps(),
-      deps_path: "deps.nosync",
-      build_path: "_build.nosync"
+      deps_path: "../deps.nosync",
+      build_path: "../_build.nosync"
     ]
   end
 

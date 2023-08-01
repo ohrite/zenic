@@ -1,6 +1,5 @@
 defmodule Zenic.Rect do
-  alias Zenic.Math.Vector3
-  alias Zenic.{Transform, Camera}
+  alias Zenic.{Camera, Math.Vector3, Transform}
 
   @default {{0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}}
   defstruct points: @default, options: [], transform: Transform.new()
@@ -25,6 +24,19 @@ defmodule Zenic.Rect do
   end
 
   defimpl Zenic.Renderable, for: __MODULE__ do
+    alias Zenic.{Camera, Math.Vector3, Transform}
+
+    def apply(%{transform: from, options: options} = rect, %{transforms: transforms}) do
+      transform =
+        with {:ok, id} <- Keyword.fetch(options, :id),
+             {:ok, to} <- Keyword.fetch(transforms, id) do
+            Transform.lerp(from, to, 1)
+        else
+          _ -> from
+        end
+      %{rect | transform: transform}
+    end
+
     defp hidden?(point1, point2, point3, %{position: position}) do
       normal =
         Vector3.sub(point1, point2)

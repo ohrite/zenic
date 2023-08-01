@@ -36,7 +36,10 @@ defmodule Zenic.Math.Quaternion do
   @spec slerp(a :: t(), b :: t(), t :: number) :: t()
   def slerp(a, b, t)
 
-  def slerp(a, b, t) when t >= 0.0 and t <= 1.0 do
+  def slerp(a, b, t) when is_number(t) and a == b, do: a
+  def slerp(a, _, t) when is_number(t) and t == 0, do: a
+  def slerp(_, b, t) when is_number(t) and t == 1, do: b
+  def slerp(a, b, t) when is_number(t) and t >= 0 and t <= 1 do
     {a, angle} =
       case Vector4.dot(a, b) do
         angle when angle < 0.0 -> {Vector4.mul(a, -1.0), -1.0 * angle}

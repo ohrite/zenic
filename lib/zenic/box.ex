@@ -1,5 +1,5 @@
 defmodule Zenic.Box do
-  alias Zenic.{Transform, Rect, Renderable}
+  alias Zenic.{Rect, Transform}
 
   @default {Rect.new(1, 1), Rect.new(1, 1), Rect.new(1, 1), Rect.new(1, 1), Rect.new(1, 1),
             Rect.new(1, 1)}
@@ -46,6 +46,20 @@ defmodule Zenic.Box do
     do: [translate: {0, height - height / 2, 0}, rotate: {3 * :math.pi() / 2, 0, 0}]
 
   defimpl Zenic.Renderable, for: __MODULE__ do
+    alias Zenic.{Renderable, Transform}
+
+    def apply(%{faces: faces, options: options, transform: from} = box, %{transforms: transforms} = keyframe) do
+      transform =
+        with {:ok, id} <- Keyword.fetch(options, :id),
+             {:ok, to} <- Keyword.fetch(transforms, id) do
+            Transform.lerp(from, to, 1)
+        else
+          _ -> from
+        end
+      faces = Enum.map(faces, &Renderable.apply(&1, keyframe))
+      %{box | transform: transform, faces: faces}
+    end
+
     def to_specs(%{faces: faces, transform: transform}, camera, transforms) do
       faces
       |> Tuple.to_list()
