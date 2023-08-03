@@ -48,15 +48,19 @@ defmodule Zenic.Box do
   defimpl Zenic.Renderable, for: __MODULE__ do
     alias Zenic.{Renderable, Transform}
 
-    def apply(%{faces: faces, options: options, transform: from} = box, %{transforms: transforms} = keyframe) do
+    def apply(
+          %{faces: faces, options: options, transform: from} = box,
+          %{transforms: transforms} = keyframe
+        ) do
       transform =
         with {:ok, id} <- Keyword.fetch(options, :id),
              {:ok, to} <- Keyword.fetch(transforms, id) do
-            Transform.lerp(from, to, 1)
+          Transform.lerp(from, to, 1)
         else
           _ -> from
         end
-      faces = Enum.map(faces, &Renderable.apply(&1, keyframe))
+
+      faces = Tuple.to_list(faces) |> Enum.map(&Renderable.apply(&1, keyframe)) |> List.to_tuple()
       %{box | transform: transform, faces: faces}
     end
 

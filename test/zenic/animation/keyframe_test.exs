@@ -12,4 +12,13 @@ defmodule Zenic.Animation.KeyframeTest do
       assert lerped.transforms == [{:thingo, Transform.new(translate: {0.5, 0.5, 0})}]
     end
   end
+
+  describe "add/2" do
+    test "adds the keyframes together" do
+      keyframe0 = Keyframe.new(0) |> Keyframe.transform(:thingo, translate: {1, 0, 0})
+      keyframe1 = Keyframe.new(0) |> Keyframe.transform(:thingo, translate: {0, 1, 0})
+      added = Keyframe.add(keyframe0, keyframe1)
+      assert added.transforms == [{:thingo, Transform.new(translate: {1, 1, 0})}]
+    end
+  end
 end

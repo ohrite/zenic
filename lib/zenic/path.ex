@@ -25,10 +25,11 @@ defmodule Zenic.Path do
       transform =
         with {:ok, id} <- Keyword.fetch(options, :id),
              {:ok, to} <- Keyword.fetch(transforms, id) do
-            Transform.lerp(from, to, 1)
+          Transform.lerp(from, to, 1)
         else
           _ -> from
         end
+
       %{path | transform: transform}
     end
 

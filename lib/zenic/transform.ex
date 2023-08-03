@@ -2,7 +2,11 @@ defmodule Zenic.Transform do
   alias Zenic.Math.{Quaternion, Vector3, Matrix}
   alias Scenic.Math
 
-  @type t :: %__MODULE__{scale: nil | Vector3.t(), rotate: nil | Quaternion.t(), translate: nil | Vector3.t()}
+  @type t :: %__MODULE__{
+          scale: nil | Vector3.t(),
+          rotate: nil | Quaternion.t(),
+          translate: nil | Vector3.t()
+        }
   defstruct scale: nil, rotate: nil, translate: nil
 
   @type option :: {:translate, Vector3.t()} | {:rotate, Vector3.t()} | {:scale, Vector3.t()}
@@ -17,6 +21,7 @@ defmodule Zenic.Transform do
         nil -> nil
         rotate -> Quaternion.new(rotate)
       end
+
     %__MODULE__{
       translate: Keyword.get(options, :translate),
       rotate: rotate,
@@ -60,10 +65,16 @@ defmodule Zenic.Transform do
   end
 
   defp lerp_translate(t0, t1, _) when is_nil(t1), do: t0
-  defp lerp_translate(t0, t1, percent) when is_nil(t0), do: Vector3.lerp(Vector3.zero(), t1, percent)
+
+  defp lerp_translate(t0, t1, percent) when is_nil(t0),
+    do: Vector3.lerp(Vector3.zero(), t1, percent)
+
   defp lerp_translate(t0, t1, percent), do: Vector3.lerp(t0, t1, percent)
   defp lerp_rotate(r0, r1, _) when is_nil(r1), do: r0
-  defp lerp_rotate(r0, r1, percent) when is_nil(r0), do: Quaternion.slerp(Quaternion.zero(), r1, percent)
+
+  defp lerp_rotate(r0, r1, percent) when is_nil(r0),
+    do: Quaternion.slerp(Quaternion.zero(), r1, percent)
+
   defp lerp_rotate(r0, r1, percent), do: Quaternion.slerp(r0, r1, percent)
   defp lerp_scale(s0, s1, _) when is_nil(s1), do: s0
   defp lerp_scale(s0, s1, percent) when is_nil(s0), do: Vector3.lerp(Vector3.one(), s1, percent)
@@ -84,4 +95,33 @@ defmodule Zenic.Transform do
   defp to_translate(matrices, translate), do: [Matrix.translate(translate) | matrices]
   defp to_rotate(matrices, nil), do: matrices
   defp to_rotate(matrices, rotate), do: [Matrix.rotate(rotate) | matrices]
+
+  @spec add(transform :: t(), other_transform :: t()) :: t()
+  def add(
+        %{translate: t0, rotate: r0, scale: s0} = transform,
+        %{translate: t1, rotate: r1, scale: s1}
+      ) do
+    translate =
+      case {t0, t1} do
+        {nil, t1} -> t1
+        {t0, nil} -> t0
+        {t0, t1} -> Vector3.add(t0, t1)
+      end
+
+    rotate =
+      case {r0, r1} do
+        {nil, r1} -> r1
+        {r0, nil} -> r0
+        {r0, r1} -> Quaternion.mul(r0, r1)
+      end
+
+    scale =
+      case {s0, s1} do
+        {nil, s1} -> s1
+        {s0, nil} -> s0
+        {s0, s1} -> Vector3.mul(s0, s1)
+      end
+
+    %{transform | translate: translate, rotate: rotate, scale: scale}
+  end
 end

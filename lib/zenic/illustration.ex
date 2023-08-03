@@ -28,7 +28,6 @@ defmodule Zenic.Illustration do
       Graph.build()
       |> add_specs_to_graph(specs)
 
-    {:ok,
-     assign(push_graph(scene, graph), graph: graph, renderable: renderable, camera: camera)}
+    {:ok, assign(push_graph(scene, graph), graph: graph, renderable: renderable, camera: camera)}
   end
 end

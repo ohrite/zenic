@@ -26,6 +26,7 @@ defmodule Zenic.Dot do
         else
           _ -> from
         end
+
       %{dot | transform: transform}
     end
 

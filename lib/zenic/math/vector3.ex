@@ -115,6 +115,7 @@ defmodule Zenic.Math.Vector3 do
   def lerp(a, b, t) when is_number(t) and a == b, do: a
   def lerp(a, _, t) when is_number(t) and t == 0, do: a
   def lerp(_, b, t) when is_number(t) and t == 1, do: b
+
   def lerp(a, b, t) when is_number(t) and t > 0 and t < 1 do
     b
     |> sub(a)

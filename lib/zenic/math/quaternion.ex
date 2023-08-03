@@ -39,6 +39,7 @@ defmodule Zenic.Math.Quaternion do
   def slerp(a, b, t) when is_number(t) and a == b, do: a
   def slerp(a, _, t) when is_number(t) and t == 0, do: a
   def slerp(_, b, t) when is_number(t) and t == 1, do: b
+
   def slerp(a, b, t) when is_number(t) and t >= 0 and t <= 1 do
     {a, angle} =
       case Vector4.dot(a, b) do
@@ -51,5 +52,17 @@ defmodule Zenic.Math.Quaternion do
 
     Vector4.mul(a, :math.sin(theta * (1.0 - t)) / sin_theta)
     |> Vector4.add(Vector4.mul(b, :math.sin(theta * t) / sin_theta))
+  end
+
+  @spec mul(a :: t(), b :: t()) :: t()
+  def mul(a, b)
+
+  def mul({x1, y1, z1, w1}, {x2, y2, z2, w2}) do
+    {
+      w1 * x2 + x1 * w2 + y1 * z2 - z1 * y2,
+      w1 * y2 - x1 * z2 + y1 * w2 + z1 * x2,
+      w1 * z2 + x1 * y2 - y1 * x2 + z1 * w2,
+      w1 * w2 - x1 * x2 - y1 * y2 - z1 * z2
+    }
   end
 end

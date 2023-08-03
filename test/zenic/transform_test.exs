@@ -83,4 +83,22 @@ defmodule Zenic.TransformTest do
       assert Transform.lerp(base, destination, 0.1) == Transform.new(translate: {0.1, 0.1, 0.1})
     end
   end
+
+  describe "add/2" do
+    test "adds one transform to another" do
+      base = Transform.new(translate: {1, 0, 0}, rotate: {0, 1, 0}, scale: {1, 2, 1})
+      destination = Transform.new(translate: {0, 1, 0}, rotate: {0, 0, 0}, scale: {1, 2, 1})
+
+      assert Transform.add(base, destination) ==
+               Transform.new(translate: {1, 1, 0}, rotate: {0, 1, 0}, scale: {1, 4, 1})
+    end
+
+    test "skips nil transforms" do
+      base = Transform.new(translate: {0, 1, 0})
+      destination = Transform.new(scale: {2, 2, 2})
+
+      assert Transform.add(base, destination) ==
+               Transform.new(translate: {0, 1, 0}, scale: {2, 2, 2})
+    end
+  end
 end
